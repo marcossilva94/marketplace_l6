@@ -6,14 +6,16 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Marketplace L6</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{asset('css/app.css')}}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
         .front.row {
             margin-bottom: 40px;
         }
     </style>
+    @yield('stylesheets')
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light" style="margin-bottom: 40px;">
@@ -29,6 +31,12 @@
             <li class="nav-item @if(request()->is('/')) active @endif">
                 <a class="nav-link" href="{{route('home')}}">Home <span class="sr-only">(current)</span></a>
             </li>
+
+            @foreach ($categories as $category)
+                <li class="nav-item @if(request()->is('category/'. $category->slug)) active @endif">
+                    <a class="nav-link" href="{{route('category.single', ['slug' => $category->slug])}}">{{$category->name}}</a>
+                </li>
+            @endforeach
         </ul>
 
         <ul class="navbar-nav mr-auto">
@@ -45,6 +53,11 @@
 
         <div class="my-2 my-lg-0">
             <ul class="navbar-nav mr-auto">
+                @auth
+                    <li class="nav-item @if(request()->is('my-orders')) active @endif">
+                        <a href="{{route('user.orders')}}" class="nav-link">Meus Pedidos</a>
+                    </li>
+                @endauth
                 <li class="nav-item">
                     <a href="{{route('cart.index')}}" class="nav-link">
                         @if (session()->has('cart'))
@@ -64,7 +77,9 @@
     @yield('content')
 </div>
 
+<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+<script src="{{asset('js/app.js')}}"></script>
 @yield('scripts')
-
 </body>
 </html>

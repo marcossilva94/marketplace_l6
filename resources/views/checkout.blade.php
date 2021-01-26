@@ -1,5 +1,9 @@
 @extends('layouts.front')
 
+@section('stylesheets')
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+@endsection
+
 @section('content')
 
     <div class="container">
@@ -57,7 +61,9 @@
 
 @section('scripts')
     <script src="https://stc.sandbox.pagseguro.uol.com.br/pagseguro/api/v2/checkout/pagseguro.directpayment.js"></script>
-    <script src="{{asset('assets/js/jquery.ajax.js')}}"></script>
+    
+    <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    
     <script>
         const sessionId = '{{session()->get('pagseguro_session_code')}}';
 
@@ -65,7 +71,7 @@
     </script>
     
     <script>
-        let amountTransaction = '{{$total}}';
+        let amountTransaction = '{{$cartItems}}';
         let cardNumber = document.querySelector('input[name=card_number]');
         let spanBrand = document.querySelector('span.brand');
 
@@ -79,7 +85,7 @@
                         spanBrand.innerHTML = imgFlag;
                         document.querySelector('input[name=card_brand]').value = res.brand.name;
 
-                        getInstallments(40, res.brand.name);
+                        getInstallments(amountTransaction, res.brand.name);
                     },
                     error: function(err){
                         console.log(err);
@@ -129,7 +135,8 @@
                 data: data,
                 dataType: 'json',
                 success: function(res){
-                    console.log(res);
+                    toastr.success(res.data.message, 'Sucesso')
+                    window.location.href = '{{route('checkout.thanks')}}?order=' + res.data.order;
                 }
             });
         }

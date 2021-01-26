@@ -21,8 +21,6 @@
             <label>Descrição</label>
             <input type="text" name="description" class="form-control" value="{{$category->description}}">
         </div>
-
-       
         <div>
             <button type="submit" class="btn btn-lg btn-success">Atualizar Categoria</button>
         </div>
