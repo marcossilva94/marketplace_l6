@@ -16,8 +16,6 @@ class CheckoutController extends Controller
             return redirect()->route('login');
         }
 
-        
-
         if(!session()->has('cart')) return redirect()->route('home');
         
         $this->makePagSeguroSession();
@@ -59,7 +57,7 @@ class CheckoutController extends Controller
             $userOrder->stores()->sync($stores);
 
 
-            //Notificar loja ded novo pedido
+            // //Notificar loja ded novo pedido
             $store = (new Store())->notifyStoreOwners($stores);
 
             session()->forget('cart');
@@ -97,13 +95,12 @@ class CheckoutController extends Controller
         
         if (!session()->has('pagseguro_session_code')) {
             
-            $sessionCode = \PagSeguro\Services\Session::create(
+          $sessionCode = \PagSeguro\Services\Session::create(
                 \PagSeguro\Configuration\Configure::getAccountCredentials()
             );
-            
-            session()->put('pagseguro_session_code', $sessionCode->getResult());
+           
+          session()->put('pagseguro_session_code', $sessionCode->getResult());
         }
-        
     }
 
 }
