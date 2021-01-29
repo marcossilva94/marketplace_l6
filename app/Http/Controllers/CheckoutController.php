@@ -3,15 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Payment\PagSeguro\CreditCard;
+use App\Payment\PagSeguro\Notification;
 use App\Store;
+use App\User;
+use App\UserOrder;
 use Exception;
 use Illuminate\Http\Request;
+use Ramsey\Uuid\Uuid;
 
 class CheckoutController extends Controller
 {
     public function index()
     {
-        //session()->forget('pagseguro_session_code');
+      //session()->forget('pagseguro_session_code');
         if (!auth()->check()) {
             return redirect()->route('login');
         }
@@ -41,7 +45,9 @@ class CheckoutController extends Controller
             $user = auth()->user();  
             $cartItems = session()->get('cart');
             $stores = array_unique(array_column($cartItems, 'store_id'));
-            $reference = 'XPTO';
+            $reference = Uuid::uuid4();
+
+
             $creditCardPayment = new CreditCard($cartItems, $user, $dataPost, $reference);
             $result = $creditCardPayment->doPayment();
 
@@ -49,8 +55,7 @@ class CheckoutController extends Controller
                 'reference'         => $reference,
                 'pagseguro_code'    => $result->getCode(),
                 'pagseguro_status'  => $result->getStatus(),
-                'items'             => serialize($cartItems),
-                'store_id'          => 1
+                'items'             => serialize($cartItems)
             ];
 
             $userOrder = $user->orders()->create($userOrder);
@@ -88,6 +93,35 @@ class CheckoutController extends Controller
     public function thanks()
     {
         return view('thanks');
+    }
+
+
+    public function notification()
+    {
+        try {
+            $notification = new Notification();
+
+            $notification = $notification->getTransaction();
+
+            //Atualizar o pedido do usuario
+            $reference = base64_decode($notification->getReference());
+            $userOrder = UserOrder::whereReference($reference);
+            $userOrder->update([
+                'pagseguro_status' => $notification->getStatus()
+            ]);
+
+            if ($notification->getStatus() == 3) {
+                //Liberar pedido do usuario
+                //Notificar Usuario
+            }
+
+            return response()->json([], 204);
+        } catch (\Exception $e) {
+            $message = env('APP_DEBUG') ? $e->getMessage() : '';
+           
+            return response()->json(['error' => $message], 500);
+        }
+
     }
 
     private function makePagSeguroSession()

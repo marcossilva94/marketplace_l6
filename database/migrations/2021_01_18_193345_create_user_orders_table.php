@@ -16,7 +16,7 @@ class CreateUserOrdersTable extends Migration
         Schema::create('user_orders', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('store_id');
+            
             $table->string('reference');
             $table->string('pagseguro_code');
             $table->integer('pagseguro_status');
@@ -26,7 +26,6 @@ class CreateUserOrdersTable extends Migration
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('store_id')->references('id')->on('stores');
         });
     }
 

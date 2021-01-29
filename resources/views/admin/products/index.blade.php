@@ -19,7 +19,7 @@
             <tr>
                 <td>{{$p->id}}</td>
                 <td>{{$p->name}}</td>
-                <td>R$ {{number_format($p->price, 2, '','.')}}</td>
+                <td>R$ {{number_format($p->price, 2, ',','.')}}</td>
                 <td>{{$p->store->name}}</td>
                 <td>
                     <div class="btn-group">
