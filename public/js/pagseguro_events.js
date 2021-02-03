@@ -28,7 +28,10 @@
     submitButton.addEventListener('click', function(event)
     {
         event.preventDefault();
-        
+        document.querySelector('div.msg').innerHTML = '';
+        let buttonTarget = event.target; 
+        buttonTarget.disabled = true;
+        buttonTarget.innerHTML = 'Carregando...';
         PagSeguroDirectPayment.createCardToken({
             cardNumber:      document.querySelector('input[name=card_number]').value,
             brand:           document.querySelector('input[name=card_brand]').value,
@@ -37,7 +40,15 @@
             expirationYear:  document.querySelector('input[name=card_year]').value,
             success: function(res){
                 console.log(res);
-                proccessPayment(res.card.token)
+                proccessPayment(res.card.token, buttonTarget)
+            },
+            error: function(err){
+                buttonTarget.disabled = false;
+                buttonTarget.innerHTML = "Efetuar Pagamento";
+
+                for(let i in err.errors){
+                    document.querySelector('div.msg').innerHTML = showErrorMessages(errorsMapPagseguroJs(i));
+                }
             }
         });
     });
